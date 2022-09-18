@@ -9,6 +9,6 @@ It will then push every directory as subprocess.
 
 ## Installation
 
-1. install drive (see link above)
-2. configure drive for your multiple folders (see drive help)
+1. install `drive` (see link above)
+2. configure `drive` for your multiple folders (see `drive` help)
 3. make sure to have `notify-send` installed. It's included in many user friendly linux distributions.
