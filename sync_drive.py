@@ -22,7 +22,7 @@ import yaml
 
 CONFIG_FILE = "./config.yml"
 DRIVE_PUSH_COMMAND = "drive push -ignore-name-clashes . -no-prompt"
-NOTIFY_USER_COMMAND = 'notify-send "{} - sync_drive - {} - push finished"'
+NOTIFY_USER_COMMAND = "notify-send {}"
 
 
 def load_config(filename: str = CONFIG_FILE) -> dict:
@@ -56,9 +56,11 @@ def run_command(command: str) -> tuple[str, str]:
 
 def notify(directory: str) -> None:
     """Notify a user with datetime and directory name."""
-    cmd = NOTIFY_USER_COMMAND.format(
-        datetime.datetime.now().strftime("%H:%M"), directory
+    message = "{} - sync_drive - {} - push finished".format(
+        datetime.datetime.now().strftime("%H:%M"), directory.split("/")[-1]
     )
+    print(message)
+    cmd = NOTIFY_USER_COMMAND.format(message)
     run_command(cmd)
 
 
@@ -92,4 +94,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    pass
+    # main()
