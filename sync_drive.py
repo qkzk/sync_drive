@@ -12,6 +12,7 @@ This script will read paths to push from a `config.yaml` file in same directory.
 It will then push every directory as subprocess.
 """
 
+from typing import IO, Optional
 import datetime
 import multiprocessing
 import os
@@ -36,6 +37,14 @@ def move_to_dir(directory: str) -> None:
     os.chdir(directory)
 
 
+def parse_output(output: Optional[IO[bytes]]) -> str:
+    """
+    Parse the output (stdout or stderr) or a command into a string.
+    Returns an empty string the output is None
+    """
+    return "" if output is None else output.read().decode("utf-8")
+
+
 def run_command(command: str) -> tuple[str, str]:
     """
     Run the command.
@@ -48,27 +57,32 @@ def run_command(command: str) -> tuple[str, str]:
         stderr=subprocess.PIPE,
         stdin=subprocess.PIPE,
     )
-    return (
-        "" if result.stdout is None else result.stdout.read().decode("utf-8"),
-        "" if result.stderr is None else result.stderr.read().decode("utf-8"),
-    )
+    return parse_output(result.stdout), parse_output(result.stderr)
 
 
-def notify(directory: str) -> None:
-    """Notify a user with datetime and directory name."""
-    message = "{} - sync_drive - {} - push finished".format(
+def format_welcome_message() -> str:
+    """Format a welcome message with datetime"""
+    return f"sync_drive started : {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}"
+
+
+def format_completed_message(directory: str) -> str:
+    """Format a completed message"""
+    return "{} - sync_drive - {} - push finished".format(
         datetime.datetime.now().strftime("%H:%M"), directory.split("/")[-1]
     )
+
+
+def notify(message: str) -> None:
+    """Notify a user with datetime and directory name."""
     print(message)
-    cmd = NOTIFY_USER_COMMAND.format(message)
-    run_command(cmd)
+    run_command(NOTIFY_USER_COMMAND.format(message))
 
 
 def push_dir_to_drive(directory: str):
     """Move into a directory and run the drive push command."""
     move_to_dir(directory)
     run_command(DRIVE_PUSH_COMMAND)
-    notify(directory)
+    notify(format_completed_message(directory))
 
 
 def push_all_dir(config: dict[str, str]):
@@ -88,11 +102,11 @@ def main():
     Load directories from the config file,
     For every directory, cd into it and run the command.
     """
+    notify(format_welcome_message())
     config = load_config()
     print(config)
     push_all_dir(config)
 
 
 if __name__ == "__main__":
-    pass
-    # main()
+    main()
