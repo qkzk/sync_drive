@@ -21,7 +21,7 @@ import yaml
 
 
 CONFIG_FILE = "./config.yml"
-DRIVE_PUSH_COMMAND = "drive push -ignore-name-clashes . -no-prompt"
+DRIVE_PUSH_COMMAND = "drive push -ignore-name-clashes -no-prompt ."
 NOTIFY_USER_COMMAND = "notify-send {}"
 
 
